@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>StrangeInfinity Drive - Sign In</title>
+    <link rel="stylesheet" href="/static/css/app.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: max(16px, env(safe-area-inset-top, 16px)) max(16px, env(safe-area-inset-right, 16px)) max(16px, env(safe-area-inset-bottom, 16px)) max(16px, env(safe-area-inset-left, 16px));
+            box-sizing: border-box;
+            background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.08), transparent 40%),
+                        var(--bg-primary);
+            overflow-y: auto;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+        .auth-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-logo-badge {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+        }
+        .auth-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .auth-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .error-banner {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            display: none;
+        }
+        .theme-toggle-fixed {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top, 16px));
+            right: max(16px, env(safe-area-inset-right, 16px));
+            z-index: 100;
+        }
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 24px 18px;
+                border-radius: var(--radius-md);
+                gap: 16px;
+            }
+            .auth-logo-badge {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                font-size: 24px;
+            }
+            .auth-title {
+                font-size: 1.25rem;
+            }
+            .form-input, .form-select {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="icon-btn theme-toggle-fixed" onclick="toggleTheme()" id="themeToggleBtn" aria-label="Toggle Theme" style="display:flex; align-items:center; justify-content:center;"></button>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo-badge">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg>
+            </div>
+            <div class="auth-title" id="authTitle">StrangeInfinity <span style="font-weight:400; color:var(--primary);">Drive</span></div>
+            <div class="auth-subtitle" id="authSubtitle">Secure Private Cloud Storage</div>
+        </div>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <!-- Auth Mode Tabs -->
+        <div id="authTabs" style="display:flex; border-bottom:1px solid var(--border-color); margin-bottom:8px;">
+            <button type="button" id="tabLogin" onclick="switchAuthTab('login')" style="flex:1; padding:10px; border:none; background:none; font-weight:600; font-size:0.95rem; cursor:pointer; color:var(--primary); border-bottom:2px solid var(--primary);">Sign In</button>
+            <button type="button" id="tabRegister" onclick="switchAuthTab('register')" style="flex:1; padding:10px; border:none; background:none; font-weight:600; font-size:0.95rem; cursor:pointer; color:var(--text-muted); border-bottom:2px solid transparent;">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-input" id="loginUsername" required autocomplete="username" autofocus>
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="loginPassword" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="primary-btn" id="loginSubmitBtn" style="width:100%; margin-top:20px; padding:12px;">Sign In</button>
+        </form>
+
+        <!-- Register / Sign Up Form -->
+        <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label class="form-label">Username (min 3 characters)</label>
+                <input type="text" class="form-input" id="regUsername" required minlength="3" autocomplete="username" placeholder="e.g. alex">
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <label class="form-label">Password (min 8 characters)</label>
+                <input type="password" class="form-input" id="regPassword" required minlength="8" autocomplete="new-password">
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-input" id="regConfirmPassword" required minlength="8" autocomplete="new-password">
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <label class="form-label" style="margin-bottom:0; display:flex; align-items:center; gap:6px;">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="color:var(--primary);"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                        <span>Storage Plan / Quota</span>
+                    </label>
+                    <span id="regStorageBadge" style="font-size:0.75rem; color:var(--primary); font-weight:600; background:var(--primary-light); padding:2px 8px; border-radius:12px;">5 GB</span>
+                </div>
+                <select class="form-select" id="regStorageTier" onchange="handleStorageTierChange()" style="width:100%;">
+                    <option value="2">2 GB - Starter Cloud</option>
+                    <option value="5" selected>5 GB - Standard Drive (Recommended)</option>
+                    <option value="15">15 GB - Power User</option>
+                    <option value="50">50 GB - Pro Drive</option>
+                    <option value="100">100 GB - High Capacity</option>
+                    <option value="0">Unlimited Storage (No Cap)</option>
+                    <option value="custom">Custom GB...</option>
+                </select>
+            </div>
+            <div class="form-group" id="regCustomStorageGroup" style="display:none; margin-top:10px;">
+                <label class="form-label">Custom Storage Amount (GB)</label>
+                <input type="number" class="form-input" id="regCustomStorageInput" min="0.5" step="0.5" placeholder="e.g. 25" style="width:100%;">
+            </div>
+            <button type="submit" class="primary-btn" id="regSubmitBtn" style="width:100%; margin-top:20px; padding:12px;">Sign Up & Create Drive</button>
+        </form>
+
+        <!-- Setup Form (Hidden by default, shown if no admin user exists) -->
+        <form id="setupForm" style="display:none;" onsubmit="handleSetup(event)">
+            <div class="form-group">
+                <label class="form-label">Administrator Username</label>
+                <input type="text" class="form-input" id="setupUsername" value="admin" required minlength="3">
+            </div>
+            <div class="form-group" style="margin-top:12px;">
+                <label class="form-label">Administrator Password (min 8 chars)</label>
+                <input type="password" class="form-input" id="setupPassword" required minlength="8">
+            </div>
+            <div class="form-group" style="margin-top:12px;">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-input" id="setupConfirmPassword" required minlength="8">
+            </div>
+            <button type="submit" class="primary-btn" id="setupSubmitBtn" style="width:100%; margin-top:20px; padding:12px;">Complete Initial Setup</button>
+        </form>
+    </div>
+
+    <script src="/static/js/icons.js"></script>
+    <script>
+        const sunIcon = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+        const moonIcon = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
+        function updateThemeBtn(isDark) {
+            const btn = document.getElementById("themeToggleBtn");
+            if (btn) btn.innerHTML = isDark ? sunIcon : moonIcon;
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem("mydrive_theme") || "system";
+            if (savedTheme === "system") {
+                const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+            } else {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+            }
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            updateThemeBtn(isDark);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute("data-theme") || "light";
+            const next = current === "dark" ? "light" : "dark";
+            localStorage.setItem("mydrive_theme", next);
+            document.documentElement.setAttribute("data-theme", next);
+            updateThemeBtn(next === "dark");
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            initTheme();
+            try {
+                const res = await fetch("/api/auth/setup-status");
+                const data = await res.json();
+                if (data.needs_setup) {
+                    document.getElementById("authTitle").textContent = "Initial System Setup";
+                    document.getElementById("authSubtitle").textContent = "Create your administrator account to get started";
+                    document.getElementById("authTabs").style.display = "none";
+                    document.getElementById("loginForm").style.display = "none";
+                    document.getElementById("setupForm").style.display = "block";
+                    return;
+                }
+            } catch (_) {}
+
+            if (window.location.pathname.includes("register") || window.location.pathname.includes("signup")) {
+                switchAuthTab("register");
+            }
+        });
+
+        function switchAuthTab(mode) {
+            const banner = document.getElementById("errorBanner");
+            banner.style.display = "none";
+            const loginTab = document.getElementById("tabLogin");
+            const regTab = document.getElementById("tabRegister");
+            const loginForm = document.getElementById("loginForm");
+            const regForm = document.getElementById("registerForm");
+
+            if (mode === "register") {
+                loginForm.style.display = "none";
+                regForm.style.display = "block";
+                regTab.style.color = "var(--primary)";
+                regTab.style.borderBottomColor = "var(--primary)";
+                loginTab.style.color = "var(--text-muted)";
+                loginTab.style.borderBottomColor = "transparent";
+                document.getElementById("regUsername").focus();
+            } else {
+                regForm.style.display = "none";
+                loginForm.style.display = "block";
+                loginTab.style.color = "var(--primary)";
+                loginTab.style.borderBottomColor = "var(--primary)";
+                regTab.style.color = "var(--text-muted)";
+                regTab.style.borderBottomColor = "transparent";
+                document.getElementById("loginUsername").focus();
+            }
+        }
+
+        function showError(msg) {
+            const banner = document.getElementById("errorBanner");
+            banner.textContent = msg;
+            banner.style.display = "block";
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const banner = document.getElementById("errorBanner");
+            banner.style.display = "none";
+
+            const u = document.getElementById("loginUsername").value.trim();
+            const p = document.getElementById("loginPassword").value;
+            const btn = document.getElementById("loginSubmitBtn");
+            btn.disabled = true;
+            btn.textContent = "Signing in...";
+
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (res.ok) {
+                    window.location.href = "/";
+                } else {
+                    const err = await res.json();
+                    showError(err.detail || "Invalid username or password");
+                }
+            } catch (_) {
+                showError("Connection failed. Check network or server status.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Sign In";
+            }
+        }
+
+        function handleStorageTierChange() {
+            const tier = document.getElementById("regStorageTier").value;
+            const customGroup = document.getElementById("regCustomStorageGroup");
+            const badge = document.getElementById("regStorageBadge");
+
+            if (tier === "custom") {
+                customGroup.style.display = "block";
+                document.getElementById("regCustomStorageInput").focus();
+                badge.textContent = "Custom";
+            } else {
+                customGroup.style.display = "none";
+                badge.textContent = tier === "0" ? "Unlimited" : `${tier} GB`;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const banner = document.getElementById("errorBanner");
+            banner.style.display = "none";
+
+            const u = document.getElementById("regUsername").value.trim();
+            const p = document.getElementById("regPassword").value;
+            const cp = document.getElementById("regConfirmPassword").value;
+
+            if (p !== cp) {
+                showError("Passwords do not match");
+                return;
+            }
+
+            let quotaGb = 0;
+            const tier = document.getElementById("regStorageTier").value;
+            if (tier === "custom") {
+                const val = parseFloat(document.getElementById("regCustomStorageInput").value);
+                if (isNaN(val) || val <= 0) {
+                    showError("Please enter a valid custom storage amount in GB");
+                    return;
+                }
+                quotaGb = val;
+            } else {
+                quotaGb = parseFloat(tier) || 0;
+            }
+
+            const btn = document.getElementById("regSubmitBtn");
+            btn.disabled = true;
+            btn.textContent = "Creating account...";
+
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: u,
+                        password: p,
+                        quota_gb: quotaGb
+                    })
+                });
+
+                if (res.ok) {
+                    window.location.href = "/";
+                } else {
+                    const err = await res.json();
+                    showError(err.detail || "Registration failed");
+                }
+            } catch (_) {
+                showError("Network error during registration.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Sign Up & Create Drive";
+            }
+        }
+
+        async function handleSetup(e) {
+            e.preventDefault();
+            const banner = document.getElementById("errorBanner");
+            banner.style.display = "none";
+
+            const u = document.getElementById("setupUsername").value.trim();
+            const p = document.getElementById("setupPassword").value;
+            const cp = document.getElementById("setupConfirmPassword").value;
+
+            if (p !== cp) {
+                showError("Passwords do not match");
+                return;
+            }
+
+            const btn = document.getElementById("setupSubmitBtn");
+            btn.disabled = true;
+            btn.textContent = "Setting up...";
+
+            try {
+                const res = await fetch("/api/auth/setup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: u,
+                        password: p,
+                        confirm_password: cp
+                    })
+                });
+
+                if (res.ok) {
+                    window.location.href = "/";
+                } else {
+                    const err = await res.json();
+                    showError(err.detail || "Failed to complete setup");
+                }
+            } catch (_) {
+                showError("Network error initializing setup.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Complete Initial Setup";
+            }
+        }
+    </script>
+</body>
+</html>

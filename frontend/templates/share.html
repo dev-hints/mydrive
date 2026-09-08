@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Shared Content - StrangeInfinity Drive</title>
+    <link rel="stylesheet" href="/static/css/app.css">
+    <style>
+        body {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+        .share-container {
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 max(16px, env(safe-area-inset-right)) 32px max(16px, env(safe-area-inset-left));
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .share-header-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .share-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
+        }
+        .share-icon-box {
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+        .share-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            word-break: break-word;
+        }
+        .share-meta {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+        .share-body-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .password-prompt-box {
+            max-width: 400px;
+            margin: 30px auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 28px 20px;
+        }
+        @media (max-width: 640px) {
+            .share-container {
+                margin: 14px auto;
+                padding: 0 12px 24px 12px;
+            }
+            .share-header-card {
+                padding: 16px;
+                gap: 12px;
+            }
+            .share-info {
+                width: 100%;
+            }
+            #shareHeaderActions {
+                width: 100%;
+            }
+            #shareMainDownloadBtn {
+                width: 100%;
+                justify-content: center;
+            }
+            .share-body-card {
+                padding: 14px;
+            }
+            .file-table th:nth-child(3),
+            .file-table td:nth-child(3) {
+                display: none;
+            }
+            .form-input {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="brand-section">
+            <a href="/" class="brand-logo">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg>
+                </div>
+                <span class="brand-title">StrangeInfinity <span class="brand-badge">Shared</span></span>
+            </a>
+        </div>
+        <button class="icon-btn" onclick="toggleTheme()" id="themeToggleBtn" aria-label="Toggle Theme" style="display:flex; align-items:center; justify-content:center;"></button>
+    </header>
+
+    <div class="share-container">
+        <!-- Error State -->
+        <div id="shareError" class="share-body-card" style="display:none; text-align:center; padding:48px 20px;">
+            <div style="display:flex; justify-content:center; margin-bottom:16px;"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="color:var(--accent-amber);"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg></div>
+            <h2 id="shareErrorTitle" style="margin-bottom:8px;">Link Unavailable</h2>
+            <p id="shareErrorMsg" style="color:var(--text-muted);">This share link does not exist, has been revoked, or has expired.</p>
+        </div>
+
+        <!-- Password Prompt -->
+        <div id="passwordSection" class="share-body-card password-prompt-box" style="display:none;">
+            <div style="display:flex; justify-content:center; margin-bottom:12px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="color:var(--primary);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <h3>Password Required</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem;">The owner has protected this share link with a password.</p>
+            <form onsubmit="handlePasswordSubmit(event)">
+                <input type="password" class="form-input" id="sharePasswordInput" placeholder="Enter password" required autofocus style="width:100%; margin-bottom:12px;">
+                <button type="submit" class="primary-btn" style="width:100%;">Unlock Content</button>
+            </form>
+            <div id="pwError" style="color:var(--accent-red); font-size:0.85rem; display:none;">Incorrect password. Please try again.</div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="contentSection" style="display:none;">
+            <div class="share-header-card">
+                <div class="share-info">
+                    <div class="share-icon-box" id="shareHeaderIcon" style="display:flex; align-items:center; justify-content:center;"></div>
+                    <div>
+                        <div class="share-title" id="shareHeaderName">-</div>
+                        <div class="share-meta" id="shareHeaderMeta">-</div>
+                    </div>
+                </div>
+                <div id="shareHeaderActions">
+                    <a id="shareMainDownloadBtn" class="primary-btn" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
+                        <span>Download</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="share-body-card">
+                <!-- Single File Preview -->
+                <div id="filePreviewArea" style="display:none; min-height:300px; align-items:center; justify-content:center;"></div>
+
+                <!-- Folder Browser -->
+                <div id="folderBrowseArea" style="display:none;">
+                    <div class="breadcrumb-nav" id="sharedFolderBreadcrumbs" style="margin-bottom:16px; overflow-x:auto; white-space:nowrap; flex-wrap:nowrap; scrollbar-width:none; -webkit-overflow-scrolling:touch;"></div>
+                    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                        <table class="file-table" style="margin:0; min-width:320px;">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Modified</th>
+                                    <th style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sharedFolderTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/icons.js"></script>
+    <script src="/static/js/preview.js"></script>
+    <script>
+        const token = window.location.pathname.split("/").filter(Boolean).pop();
+        let shareData = null;
+        let currentSubpath = "";
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(isoStr) {
+            if (!isoStr) return "-";
+            try { return new Date(isoStr).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); }
+            catch (_) { return isoStr; }
+        }
+
+        const sunIcon = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+        const moonIcon = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
+        function updateThemeBtn(isDark) {
+            const btn = document.getElementById("themeToggleBtn");
+            if (btn) btn.innerHTML = isDark ? sunIcon : moonIcon;
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem("mydrive_theme") || "system";
+            if (savedTheme === "system") {
+                const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+            } else {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+            }
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            updateThemeBtn(isDark);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute("data-theme") || "light";
+            const next = current === "dark" ? "light" : "dark";
+            localStorage.setItem("mydrive_theme", next);
+            document.documentElement.setAttribute("data-theme", next);
+            updateThemeBtn(next === "dark");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initTheme();
+            loadShareInfo();
+        });
+
+        async function loadShareInfo() {
+            try {
+                const res = await fetch(`/api/shares/public/info/${token}`);
+                if (!res.ok) {
+                    showError("Share Unavailable", "This share link is invalid, expired, or has been revoked.");
+                    return;
+                }
+
+                shareData = await res.json();
+
+                if (shareData.requires_password) {
+                    document.getElementById("passwordSection").style.display = "block";
+                    return;
+                }
+
+                renderShareContent();
+            } catch (_) {
+                showError("Connection Error", "Failed to communicate with server.");
+            }
+        }
+
+        async function handlePasswordSubmit(e) {
+            e.preventDefault();
+            const pw = document.getElementById("sharePasswordInput").value;
+            try {
+                const res = await fetch(`/api/shares/public/verify-password/${token}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password: pw })
+                });
+
+                if (res.ok) {
+                    document.getElementById("passwordSection").style.display = "none";
+                    loadShareInfo();
+                } else {
+                    document.getElementById("pwError").style.display = "block";
+                }
+            } catch (_) {
+                alert("Verification failed");
+            }
+        }
+
+        function showError(title, msg) {
+            document.getElementById("shareError").style.display = "block";
+            document.getElementById("shareErrorTitle").textContent = title;
+            document.getElementById("shareErrorMsg").textContent = msg;
+            document.getElementById("contentSection").style.display = "none";
+            document.getElementById("passwordSection").style.display = "none";
+        }
+
+        function renderShareContent() {
+            document.getElementById("contentSection").style.display = "block";
+            document.getElementById("shareHeaderName").textContent = shareData.name;
+            document.getElementById("shareHeaderIcon").innerHTML = Icons.file(shareData.name, shareData.is_directory, { size: 38 });
+            document.getElementById("shareHeaderMeta").textContent = shareData.is_directory ? "Shared Folder" : `${formatBytes(shareData.size)} • ${shareData.mime_type}`;
+
+            const downloadUrl = `/api/shares/public/download/${token}`;
+            const downloadBtn = document.getElementById("shareMainDownloadBtn");
+            downloadBtn.href = downloadUrl;
+
+            if (shareData.is_directory) {
+                downloadBtn.style.display = "flex";
+                downloadBtn.innerHTML = `${Icons.get('download', { size: 16 })} <span>Download Folder (ZIP)</span>`;
+                document.getElementById("filePreviewArea").style.display = "none";
+                document.getElementById("folderBrowseArea").style.display = "block";
+                loadFolderBrowse("");
+            } else {
+                downloadBtn.style.display = "flex";
+                downloadBtn.innerHTML = `${Icons.get('download', { size: 16 })} <span>Download</span>`;
+                document.getElementById("folderBrowseArea").style.display = "none";
+                document.getElementById("filePreviewArea").style.display = "flex";
+                if (!shareData.download_only) {
+                    renderSingleFilePreview(downloadUrl);
+                } else {
+                    document.getElementById("filePreviewArea").innerHTML = `<p style="color:var(--text-muted);">Direct download only</p>`;
+                }
+            }
+        }
+
+        async function loadFolderBrowse(subpath) {
+            currentSubpath = subpath;
+            const tbody = document.getElementById("sharedFolderTbody");
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--text-muted);">Loading folder...</td></tr>`;
+
+            try {
+                const res = await fetch(`/api/shares/public/browse/${token}?subpath=${encodeURIComponent(subpath)}`);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--accent-red);">${escapeHtml(err.detail || "Failed to load folder contents")}</td></tr>`;
+                    return;
+                }
+
+                const data = await res.json();
+                tbody.innerHTML = "";
+
+                // Breadcrumbs
+                const bc = document.getElementById("sharedFolderBreadcrumbs");
+                bc.innerHTML = `<span class="breadcrumb-item ${!subpath ? 'active' : ''}" onclick="loadFolderBrowse('')" style="cursor:pointer;">${data.share_name}</span>`;
+                if (subpath) {
+                    let acc = "";
+                    subpath.split("/").forEach(p => {
+                        acc += (acc ? "/" : "") + p;
+                        const thisAcc = acc;
+                        bc.innerHTML += ` <span class="breadcrumb-separator">›</span> <span class="breadcrumb-item" onclick="loadFolderBrowse('${thisAcc}')" style="cursor:pointer;">${p}</span>`;
+                    });
+                }
+
+                if (!data.items || data.items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:32px; color:var(--text-muted);"><div style="display:flex; flex-direction:column; align-items:center; gap:8px;">${Icons.get('folderEmpty', {size:32})}<div>This folder is empty</div></div></td></tr>`;
+                    return;
+                }
+
+                data.items.forEach(item => {
+                    const tr = document.createElement("tr");
+                    const itemSub = item.relative_path;
+                    const dlUrl = `/api/shares/public/download/${token}?subpath=${encodeURIComponent(itemSub)}`;
+                    const rowIcon = Icons.file(item.name, item.is_directory, { size: 18 });
+                    tr.innerHTML = `
+                        <td onclick="${item.is_directory ? `loadFolderBrowse('${itemSub}')` : `window.location.href='${dlUrl}'`}" style="cursor:pointer;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span class="table-file-icon">${rowIcon}</span>
+                                <strong>${escapeHtml(item.name)}</strong>
+                            </div>
+                        </td>
+                        <td>${item.is_directory ? '-' : formatBytes(item.size)}</td>
+                        <td>${formatDate(item.modified_at)}</td>
+                        <td style="text-align:right;">
+                            <a href="${dlUrl}" download class="action-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;" title="${item.is_directory ? 'Download folder as ZIP' : 'Download file'}">
+                                ${Icons.get('download', {size: 14})} <span>${item.is_directory ? 'ZIP' : 'Download'}</span>
+                            </a>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--accent-red);">Connection error loading folder</td></tr>`;
+            }
+        }
+
+        function renderSingleFilePreview(url) {
+            const previewArea = document.getElementById("filePreviewArea");
+            previewArea.style.display = "flex";
+            const mime = shareData.mime_type || "";
+            const ext = shareData.name.split('.').pop().toLowerCase();
+
+            if (mime.startsWith("image/")) {
+                previewArea.innerHTML = `<img src="${url}" style="max-width:100%; max-height:500px; border-radius:8px; object-fit:contain;">`;
+            } else if (mime.startsWith("video/")) {
+                previewArea.innerHTML = `<video controls style="max-width:100%; max-height:500px; border-radius:8px;"><source src="${url}" type="${mime}"></video>`;
+            } else if (mime.startsWith("audio/")) {
+                previewArea.innerHTML = `<audio controls style="width:100%; max-width:500px;"><source src="${url}" type="${mime}"></audio>`;
+            } else if (mime === "application/pdf" || ext === "pdf") {
+                previewArea.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none; border-radius:8px;"></iframe>`;
+            } else if (mime.startsWith("text/")) {
+                fetch(url).then(r => r.text()).then(txt => {
+                    previewArea.innerHTML = `<pre class="text-preview-box" style="height:400px;">${txt}</pre>`;
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mydrive:
+    build: .
+    container_name: mydrive
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_NAME=MyDrive
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DEBUG=false
+      - STORAGE_ROOT=/app/data/storage
+      - DATABASE_PATH=/app/data/mydrive.db
+      - TEMP_UPLOAD_DIR=/app/data/uploads_temp
+      - TRASH_DIR=/app/data/trash
+      - AVATARS_DIR=/app/data/avatars
+      - COOKIE_SECURE=false
+      - MAX_UPLOAD_SIZE=10737418240
+      - CHUNK_SIZE=4194304
+      - SESSION_LIFETIME_DAYS=30
+      - RATE_LIMIT_LOGIN_ATTEMPTS=5
+      - RATE_LIMIT_LOCKOUT_MINUTES=15
+      - DEFAULT_USER_QUOTA_BYTES=5368709120
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
