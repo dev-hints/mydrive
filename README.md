@@ -1,6 +1,6 @@
 <div align="center">
 
-# ☁️ MyDrive
+#  MyDrive
 
 ### High-Performance, Self-Hosted Private Cloud Storage & Media Streaming
 
@@ -19,7 +19,7 @@
 
 ---
 
-## 📖 Overview
+##  Overview
 
 **MyDrive** is an enterprise-grade, self-hosted file management and media streaming server. It gives you the convenience, speed, and elegance of commercial cloud drives like Google Drive or Dropbox without compromising your privacy, subjecting you to monthly subscription fees, or leaking telemetry to third parties.
 
@@ -27,9 +27,9 @@ Whether deployed on a dedicated homelab server, a cloud VPS behind an Nginx reve
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-### 🗂️ Intuitive File & Folder Management
+###  Intuitive File & Folder Management
 - **Single Page Application (SPA):** Fast, reactive Vanilla JavaScript (ES6+) frontend without heavy runtime frameworks.
 - **Drag & Drop:** Upload files and nested folder hierarchies directly from your desktop file manager.
 - **Breadcrumb Navigation & Tree Traversal:** Instant directory traversal with URL-synced breadcrumbs and fluid back/forward navigation.
@@ -37,46 +37,46 @@ Whether deployed on a dedicated homelab server, a cloud VPS behind an Nginx reve
 - **Two-Stage Recycle Bin:** Trashed files are isolated in safe storage with instant single-click restoration or permanent purging.
 - **Archive Extraction & Bundling:** Stream entire directories as `.zip` archives on the fly with Unicode and emoji preservation.
 
-### ⚡ Resumable Chunked Streaming Upload Engine
+###  Resumable Chunked Streaming Upload Engine
 - **Memory-Safe Uploads:** Large multi-gigabyte files are sliced into 4MB binary chunks and streamed directly to disk, completely preventing RAM spikes or Out-Of-Memory (OOM) crashes on low-resource hardware.
 - **Auto-Resume on Network Drops:** If a connection drops mid-upload, simply re-uploading checks existing chunks on the server and resumes from the exact interruption offset with zero data corruption.
 - **Real-Time Progress Drawer:** Floating upload dock showing active items, percentage, instantaneous transfer speed (MB/s), and estimated time to completion (ETA).
 
-### 🎬 Universal In-Browser Media & Document Previews
+###  Universal In-Browser Media & Document Previews
 - **Video & Audio Streaming:** Native streaming for MP4, WebM, MKV, MP3, WAV, and OGG using `HTTP 206 Partial Content (Range requests)`. Scrub or skip through multi-hour movies instantly without waiting for the full file to buffer.
 - **Image Lightbox:** High-resolution image viewer (PNG, JPG, WebP, SVG, GIF, AVIF, HEIC) with pan, pinch-to-zoom, and slideshow controls.
 - **Integrated PDF Reader:** In-browser document viewer with zoom, page navigation, and text selection.
 - **Code & Markdown Viewer:** Built-in viewer for text, Markdown, Python, JavaScript, JSON, YAML, HTML, CSS, and shell scripts.
 
-### 🔗 Public & Protected Link Sharing
+###  Public & Protected Link Sharing
 - **Self-Contained Share Links:** Share any file or folder with external recipients who do not have an account.
 - **Password Protection:** Protect confidential documents with a custom passphrase before access is granted.
 - **Expiration Timers:** Automatically revoke share links after 1 Hour, 1 Day, 7 Days, 30 Days, or keep them active permanently.
 - **Download-Only Restriction:** Prevent in-browser rendering for sensitive material, forcing direct download.
 - **Live Telemetry & Revocation:** Track access counts and revoke active share links instantly from the dashboard.
 
-### 📇 Contacts Management & Phone Address Book Sync
+###  Contacts Management & Phone Address Book Sync
 - **Direct Phone Contact Picker:** Sync contacts directly from your smartphone or tablet using the native Web Contact Picker API (`navigator.contacts.select`) without installing extra native apps.
 - **Comprehensive vCard & CSV Support:** Bi-directional import and export with RFC 6350 standard vCard (`.vcf`) files and smart-header CSV spreadsheets.
 - **Manual Contact Creator:** Clean, responsive modal for manual entry with name, phone, email, notes, company, job title, and favorite status.
 - **Actionable Cards & List View:** Click-to-call (`tel:`) and click-to-email (`mailto:`) links, search filtering across all contact fields, instant star toggling, and bulk deletion.
 - **Privacy & Storage Isolation:** Address books are strictly partitioned per user account with zero external cloud telemetry.
 
-### 📱 Smartphone, Mobile & Tablet Optimization
+###  Smartphone, Mobile & Tablet Optimization
 - **Safe-Area Inset Handling:** Full support for modern phone notches, Dynamic Islands, and curved mobile status bars (`viewport-fit=cover`).
 - **Compact Adaptive Header:** Fits the hamburger drawer toggle, fluid search bar, theme toggle, and profile avatar seamlessly down to 320px screens.
 - **Floating Action Button (FAB):** Quick touch-accessible bottom action button on mobile/tablets (`≤ 1024px`) triggering a mobile bottom action sheet.
 - **Multi-Touch Gestures:** Native pinch-to-zoom (`0.5x` to `4.0x`), double-tap zoom (`1x` / `2x`), pull-down to dismiss, and swipe navigation between items.
 - **Long-Press Multi-Select:** Touch-and-hold any file card or list row for 500ms to trigger multi-item selection with haptic vibration feedback.
 
-### 👥 Multi-User System & Role-Based Access Control (RBAC)
+###  Multi-User System & Role-Based Access Control (RBAC)
 - **Role Hierarchy:** Distinct `admin` and `user` privileges.
 - **Storage Quota Enforcement:** Administrators can allocate specific storage quotas (e.g., 5GB, 50GB, or unlimited) per user. Quotas are strictly enforced in real time during file uploads and folder creations.
 - **User Management Dashboard:** Create accounts, toggle active/suspended status, reset user passwords, and view storage allocations.
 - **Storage Namespace Isolation:** Each user's files and metadata are strictly partitioned within isolated directory trees (`data/storage/users/<user_id>`).
 - **User Profiles:** Custom avatar uploads, display names, email addresses, and self-service password changes.
 
-### 🛡️ Enterprise-Grade Security
+###  Enterprise-Grade Security
 - **Argon2id Password Hashing:** State-of-the-art password security with unique cryptographic salts. Plaintext passwords are never saved.
 - **Canonical Path Traversal Defense:** All filesystem operations pass through `resolve_safe_path()` which resolves canonical realpaths with `os.path.realpath()` to eliminate directory traversal (`../`) and symlink breakout exploits.
 - **Double-Submit CSRF Protection:** Cryptographically signed anti-forgery tokens validate all state-changing HTTP mutations (`POST`, `PUT`, `DELETE`).
@@ -86,7 +86,7 @@ Whether deployed on a dedicated homelab server, a cloud VPS behind an Nginx reve
 
 ---
 
-## 🏛️ System Architecture
+##  System Architecture
 
 ```
                                     CLIENTS
@@ -117,7 +117,7 @@ Whether deployed on a dedicated homelab server, a cloud VPS behind an Nginx reve
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - **Python:** 3.10 or newer (tested up to 3.14)
@@ -167,7 +167,7 @@ Whether deployed on a dedicated homelab server, a cloud VPS behind an Nginx reve
 
 ---
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 MyDrive includes a production-ready `Dockerfile` and `docker-compose.yml` for effortless containerized deployment.
 
@@ -199,7 +199,7 @@ All databases, user files, uploads, and avatars persist reliably in the `./data`
 
 ---
 
-## 📱 Android Termux Guide (24/7 Pocket Server)
+##  Android Termux Guide (24/7 Pocket Server)
 
 MyDrive was specifically engineered to run in userspace on an Android device via **Termux** and **Debian PRoot** without requiring root permissions, Docker, or native Linux kernel privileges.
 
@@ -241,7 +241,7 @@ Android will kill background services aggressively unless unrestricted:
 
 ---
 
-## 🌐 Remote Access & Network Topologies
+##  Remote Access & Network Topologies
 
 | Access Method | URL Example | Description |
 | :--- | :--- | :--- |
@@ -265,7 +265,7 @@ Cloudflare will output a public HTTPS URL (e.g., `https://random-subdomain.trycl
 
 ---
 
-## ⚙️ Configuration (.env)
+##  Configuration (.env)
 
 All settings are configured via environment variables or a `.env` file in the project root:
 
@@ -291,7 +291,7 @@ All settings are configured via environment variables or a `.env` file in the pr
 
 ---
 
-## 🛠️ Management Scripts
+##  Management Scripts
 
 Convenient shell scripts located in `scripts/` automate daily operational workflows:
 
@@ -317,7 +317,7 @@ bash scripts/update.sh
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 MyDrive provides a full REST API for programmatic automation and headless integrations:
 
@@ -375,7 +375,7 @@ MyDrive provides a full REST API for programmatic automation and headless integr
 
 ---
 
-## 🧪 Automated Testing Suite
+##  Automated Testing Suite
 
 MyDrive includes 40 automated unit and integration tests covering security, authentication, quota limits, chunked uploads, contact import/export, file streaming, and Unicode filename handling:
 
@@ -388,7 +388,7 @@ All tests execute inside isolated temporary sandboxes with automated teardown to
 
 ---
 
-## 📄 User & Administrator Manual (PDF)
+##  User & Administrator Manual (PDF)
 
 A complete, beautifully formatted printable PDF manual is included in the root directory:
 - **File:** `MyDrive_User_Manual.pdf`
@@ -400,7 +400,7 @@ python3 generate_manual_pdf.py
 
 ---
 
-## 🔒 Security & Privacy Architecture
+##  Security & Privacy Architecture
 
 - **Zero Data Leakage:** No personal files, databases, or secrets are tracked in this repository. All user data is isolated in `.gitignore`.
 - **Timing Attack Mitigation:** Password verification uses constant-time string comparisons.
@@ -409,6 +409,6 @@ python3 generate_manual_pdf.py
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
